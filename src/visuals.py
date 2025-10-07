@@ -125,9 +125,6 @@ def generate_visuals(storyboard: List[Dict[str, Any]], style: str) -> List[str]:
         if idx == len(storyboard):  # Last scene - fade out
             clip = clip.fadeout(0.5)
         
-        # Add subtle zoom effect for engagement
-        clip = clip.resize(lambda t: 1 + 0.05 * t / duration)
-        
         clip.write_videofile(
             clip_path, 
             fps=30,  # Higher FPS for smoothness
