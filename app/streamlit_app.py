@@ -43,12 +43,15 @@ if "final_video" not in st.session_state:
 # --- Auto Mode ---
 with st.expander("🚀 Auto Mode - Professional Video Creator", expanded=True):
     st.markdown("**Enter a topic and get a professional 30-second video instantly!**")
+    st.markdown("🎥 **Now with AI video generation! (RunwayML, Pika Labs)**")
     topic = st.text_input("📝 Topic (e.g., महिंद्रा स्कॉर्पियो की खूबियां, घर पर कम्पोस्ट कैसे करें) ", placeholder="Enter your topic here...")
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
     with col1:
         auto_tone = st.selectbox("🎭 Tone", ["friendly", "conversational", "educational", "humorous", "serious"], index=0, key="auto_tone")
     with col2:
         auto_target = st.slider("⏱️ Duration (seconds)", 15, 60, 30, 5, key="auto_target")
+    with col3:
+        use_ai = st.checkbox("🤖 Use AI Video (if API keys set)", value=bool(CONFIG.runway_api_key or CONFIG.pika_api_key), disabled=not bool(CONFIG.runway_api_key or CONFIG.pika_api_key))
     if st.button("🎬 Create Professional Video", type="primary", use_container_width=True):
         if not topic.strip():
             st.error("Please enter a topic.")

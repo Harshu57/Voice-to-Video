@@ -99,17 +99,103 @@ def _text_to_slide(text: str, width: int = 1920, height: int = 1080) -> Image.Im
     return bg
 
 
+def _generate_with_runway_api(prompt: str, duration: int) -> str:
+    """
+    Generate video using RunwayML API (free tier available)
+    """
+    try:
+        import requests
+        
+        # RunwayML API endpoint
+        url = "https://api.runwayml.com/v1/image_to_video"
+        headers = {
+            "Authorization": f"Bearer {CONFIG.runway_api_key}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "text_prompt": prompt,
+            "duration": duration,
+            "resolution": "1280x720"
+        }
+        
+        response = requests.post(url, headers=headers, json=payload, timeout=120)
+        if response.status_code == 200:
+            video_url = response.json().get("video_url")
+            # Download and save video
+            video_response = requests.get(video_url)
+            output_path = os.path.join("outputs", "visuals", f"runway_scene.mp4")
+            _ensure_dir(output_path)
+            with open(output_path, "wb") as f:
+                f.write(video_response.content)
+            return output_path
+    except Exception as e:
+        logger.warning("RunwayML API failed: %s", e)
+    return None
+
+
+def _generate_with_pika_api(prompt: str, duration: int) -> str:
+    """
+    Generate video using Pika Labs API (free tier available)
+    """
+    try:
+        import requests
+        
+        # Pika Labs API endpoint
+        url = "https://api.pika.art/v1/generate"
+        headers = {
+            "Authorization": f"Bearer {CONFIG.pika_api_key}",
+            "Content-Type": "application/json"
+        }
+        payload = {
+            "prompt": prompt,
+            "duration": duration,
+            "aspect_ratio": "16:9"
+        }
+        
+        response = requests.post(url, headers=headers, json=payload, timeout=120)
+        if response.status_code == 200:
+            video_url = response.json().get("video_url")
+            # Download and save video
+            video_response = requests.get(video_url)
+            output_path = os.path.join("outputs", "visuals", f"pika_scene.mp4")
+            _ensure_dir(output_path)
+            with open(output_path, "wb") as f:
+                f.write(video_response.content)
+            return output_path
+    except Exception as e:
+        logger.warning("Pika Labs API failed: %s", e)
+    return None
+
+
 def generate_visuals(storyboard: List[Dict[str, Any]], style: str) -> List[str]:
     """
-    For each scene, create a short clip. If external APIs are unavailable, create slide-based clips.
+    For each scene, create a short clip. Try AI APIs first, then fallback to professional slides.
     """
     outputs: List[str] = []
     width, height = 1920, 1080
 
-    # For brevity, we directly use slide fallback. API integrations can be added similarly.
     for idx, scene in enumerate(storyboard, start=1):
         duration = max(1, int(scene.get("duration_sec", 5)))
         text = str(scene.get("on_screen_text") or scene.get("script_text") or "Scene")
+        
+        # Try AI video generation APIs in order of preference
+        ai_output = None
+        
+        # Try RunwayML first (most reliable)
+        if CONFIG.runway_api_key:
+            runway_prompt = f"Cinematic video: {text}. Professional quality, smooth motion."
+            ai_output = _generate_with_runway_api(runway_prompt, duration)
+        
+        # Try Pika Labs if RunwayML fails
+        if not ai_output and CONFIG.pika_api_key:
+            pika_prompt = f"Professional video scene: {text}. High quality, cinematic style."
+            ai_output = _generate_with_pika_api(pika_prompt, duration)
+        
+        if ai_output:
+            outputs.append(ai_output)
+            continue
+        
+        # Fallback to professional slides (always works)
         img = _text_to_slide(text, width, height)
         img_path = os.path.join("outputs", "visuals", f"scene_{idx:02d}.png")
         _ensure_dir(img_path)

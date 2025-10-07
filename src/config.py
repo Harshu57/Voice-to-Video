@@ -17,6 +17,7 @@ class AppConfig:
     runway_api_key: str | None = os.getenv("RUNWAY_API_KEY")
     kaiber_api_key: str | None = os.getenv("KAIBER_API_KEY")
     youtube_client_secret_file: str | None = os.getenv("YOUTUBE_CLIENT_SECRET_FILE")
+    veo3_api_key: str | None = os.getenv("VEO3_API_KEY")
 
     openai_tts_voice: str | None = os.getenv("OPENAI_TTS_VOICE")
 
