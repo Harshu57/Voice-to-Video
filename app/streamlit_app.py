@@ -2,9 +2,13 @@ from __future__ import annotations
 
 import json
 import os
+import sys
 from typing import Any, Dict, List, Optional
 
 import streamlit as st
+
+# Add project root to path for imports
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from src.config import CONFIG
 from src.logging_utils import setup_logger
