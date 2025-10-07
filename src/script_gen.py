@@ -11,7 +11,8 @@ logger = setup_logger(__name__)
 
 def _fallback_storyboard(transcript: str, tone: str, target_duration_sec: int, language: Optional[str]) -> Dict[str, Any]:
     words = transcript.split()
-    n_scenes = max(3, min(6, max(1, len(words) // 20)))
+    # Optimize for short-form content (30 seconds max)
+    n_scenes = max(2, min(4, max(1, len(words) // 15)))
     chunks: List[str] = []
     if n_scenes > 0:
         size = max(1, len(words) // n_scenes)
@@ -19,26 +20,26 @@ def _fallback_storyboard(transcript: str, tone: str, target_duration_sec: int, l
             chunk = " ".join(words[i * size : (i + 1) * size]) or transcript
             chunks.append(chunk)
     scenes: List[Dict[str, Any]] = []
-    per_scene = max(5, target_duration_sec // max(1, n_scenes))
+    per_scene = max(3, target_duration_sec // max(1, n_scenes))
     for i, text in enumerate(chunks, start=1):
         scenes.append(
             {
                 "id": i,
                 "duration_sec": per_scene,
                 "script_text": text.strip() or "Intro.",
-                "visual_description": "Simple slide with large title and subtle background.",
-                "on_screen_text": text.strip()[:80],
+                "visual_description": "Professional slide with gradient background and centered typography.",
+                "on_screen_text": text.strip()[:60],  # Shorter for mobile viewing
             }
         )
     return {
-        "title": "Auto Storyboard",
+        "title": f"Professional {transcript[:30]}...",
         "language": language or "auto",
         "tone": tone,
         "scenes": scenes,
-        "thumbnail_idea": "Bold title over abstract gradient background.",
-        "description": "Generated locally without LLM (demo mode).",
-        "tags": ["demo", "auto", "storyboard"],
-        "title_options": ["Auto Storyboard 1", "Auto Storyboard 2", "Auto Storyboard 3"],
+        "thumbnail_idea": "Bold title with professional gradient background.",
+        "description": f"Professional short-form video about {transcript[:50]}...",
+        "tags": ["professional", "short-form", "video", "auto"],
+        "title_options": [f"{transcript[:25]}...", f"Professional {transcript[:20]}...", f"Quick {transcript[:20]}..."],
     }
 
 

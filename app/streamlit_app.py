@@ -23,7 +23,8 @@ logger = setup_logger(__name__)
 
 st.set_page_config(page_title="Voice → Video Studio", layout="wide")
 
-st.title("Voice → Video Studio")
+st.title("🎬 Professional Video Studio")
+st.markdown("**Create stunning 30-second professional videos from any topic**")
 
 # Session state containers
 if "transcript" not in st.session_state:
@@ -40,11 +41,15 @@ if "final_video" not in st.session_state:
     st.session_state.final_video = None
 
 # --- Auto Mode ---
-with st.expander("Auto Mode (Topic → Hindi video)", expanded=True):
-    topic = st.text_input("Topic (e.g., घर पर कम्पोस्ट कैसे करें) ")
-    auto_tone = st.selectbox("Tone", ["friendly", "conversational", "educational", "humorous", "serious"], index=0, key="auto_tone")
-    auto_target = st.slider("Target duration (sec)", 30, 600, 90, 10, key="auto_target")
-    if st.button("Auto-create Hindi video"):
+with st.expander("🚀 Auto Mode - Professional Video Creator", expanded=True):
+    st.markdown("**Enter a topic and get a professional 30-second video instantly!**")
+    topic = st.text_input("📝 Topic (e.g., महिंद्रा स्कॉर्पियो की खूबियां, घर पर कम्पोस्ट कैसे करें) ", placeholder="Enter your topic here...")
+    col1, col2 = st.columns(2)
+    with col1:
+        auto_tone = st.selectbox("🎭 Tone", ["friendly", "conversational", "educational", "humorous", "serious"], index=0, key="auto_tone")
+    with col2:
+        auto_target = st.slider("⏱️ Duration (seconds)", 15, 60, 30, 5, key="auto_target")
+    if st.button("🎬 Create Professional Video", type="primary", use_container_width=True):
         if not topic.strip():
             st.error("Please enter a topic.")
         else:

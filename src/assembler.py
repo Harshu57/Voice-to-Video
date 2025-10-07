@@ -40,7 +40,15 @@ def assemble_video(scene_videos: List[str], audio_paths: List[str], subtitles: L
             vclip = vclip.set_audio(aclip)
             clips.append(vclip)
         final = concatenate_videoclips(clips, method="compose")
-        final.write_videofile(output_path, codec="libx264", audio_codec="aac", fps=24, verbose=False, logger=None)
+        final.write_videofile(
+            output_path, 
+            codec="libx264", 
+            audio_codec="aac", 
+            fps=30,  # Higher FPS for professional look
+            verbose=False, 
+            logger=None,
+            ffmpeg_params=["-preset", "fast", "-crf", "18", "-movflags", "+faststart"]  # High quality, web optimized
+        )
     finally:
         for c in clips:
             c.close()
