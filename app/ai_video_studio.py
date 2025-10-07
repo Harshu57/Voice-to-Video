@@ -218,6 +218,7 @@ if st.button("🎬 Generate Video", type="primary", use_container_width=True):
                 st.success("🎉 Your professional video is ready!")
                 st.session_state.generated_video = final_video
                 st.session_state.video_title = storyboard.get("title", "AI Generated Video")
+                st.session_state.video_duration = duration
                 
             except Exception as e:
                 st.error(f"❌ Error creating video: {str(e)}")
@@ -247,7 +248,7 @@ if hasattr(st.session_state, 'generated_video') and st.session_state.generated_v
     with col_info:
         st.markdown("### 📊 Video Info")
         st.info(f"**Title:** {st.session_state.video_title}")
-        st.info(f"**Duration:** {duration} seconds")
+        st.info(f"**Duration:** {st.session_state.get('video_duration', duration)} seconds")
         st.info(f"**Quality:** {video_quality}")
         st.info(f"**Style:** {video_style}")
         
